@@ -21,17 +21,17 @@
                     <p>
                         <label for="pageSize">Число постов: </label>
                         <select id="pageSize" name="pageSize" onchange="this.form.submit()">
-                            <option value="5" th:selected="${posts.getPageable().getPageSize()==5}">5</option>
-                            <option value="10" th:selected="${posts.getPageable().getPageSize()==10}">10</option>
-                            <option value="20" th:selected="${posts.getPageable().getPageSize()==20}">20</option>
-                            <option value="50" th:selected="${posts.getPageable().getPageSize()==50}">50</option>
-                            <option value="100" th:selected="${posts.getPageable().getPageSize()==100}">100</option>
+                            <option value="5" th:selected="${posts.getSize()==5}">5</option>
+                            <option value="10" th:selected="${posts.getSize()==10}">10</option>
+                            <option value="20" th:selected="${posts.getSize()==20}">20</option>
+                            <option value="50" th:selected="${posts.getSize()==50}">50</option>
+                            <option value="100" th:selected="${posts.getSize()==100}">100</option>
                         </select>
                     </p>
                     <p>
-                        <button th:if="${posts.hasPrevious()}" name="pageNumber" th:value="${posts.getPageable().getPageNumber()-1}">&lt;</button>
-                        <span th:text="${'Страница: '+posts.getPageable().getPageNumber()}"></span>
-                        <button th:if="${posts.hasNext()}" name="pageNumber" th:value="${posts.getPageable().getPageNumber()+1}">&gt;</button>
+                        <button th:if="${posts.hasPrevious()}" name="pageNumber" th:value="${posts.getNumber()-1}">&lt;</button>
+                        <span th:text="'Страница: ' + ${posts.getNumber()+1}"></span>
+                        <button th:if="${posts.hasNext()}" name="pageNumber" th:value="${posts.getNumber()+1}">&gt;</button>
                     </p>
                 </form>
             </td>
