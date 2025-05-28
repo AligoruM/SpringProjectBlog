@@ -1,5 +1,6 @@
 package org.practice.service;
 
+import org.practice.model.Comment;
 import org.practice.model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,18 +21,34 @@ public class PostServiceImpl implements PostService {
         int pageSize = pageable.getPageSize();
         int startItem = currentPage  * pageSize;
 
-        List<Post> posts = Arrays.asList(new Post(1L, "test title", "test text", 10, Set.of("test1"), Collections.emptyList()),
-                new Post(2L, "test title 2", "test text 2", 10, Set.of("test2"), Collections.emptyList()),
-                new Post(2L, "test title 3", "test text 2", 10, Set.of("test2"), Collections.emptyList()),
-                new Post(2L, "test title 4", "test text 2", 10, Set.of("test2"), Collections.emptyList()),
-                new Post(2L, "test title 5", "test text 2", 10, Set.of("test2"), Collections.emptyList()),
-                new Post(2L, "test title 6", "test text 2", 10, Set.of("test2"), Collections.emptyList()),
-                new Post(3L, "test title 7", "test text 3", 10, Set.of("test3"), Collections.emptyList()));
+        List<Post> posts = Arrays.asList(new Post(1L, "test title", "test text", 10, Set.of("test1"), null, Collections.emptyList()),
+                new Post(2L, "test title 2", "test text 2", 10, Set.of("test2"),null, Collections.emptyList()),
+                new Post(2L, "test title 3", "test text 2", 10, Set.of("test2"),null, Collections.emptyList()),
+                new Post(2L, "test title 4", "test text 2", 10, Set.of("test2"),null, Collections.emptyList()),
+                new Post(2L, "test title 5", "test text 2", 10, Set.of("test2"),null, Collections.emptyList()),
+                new Post(2L, "test title 6", "test text 2", 10, Set.of("test2"),null, Collections.emptyList()),
+                new Post(3L, "test title 7", "test text 3", 10, Set.of("test3"),null, Collections.emptyList()));
         int totalSize = posts.size();
 
         int toIndex = Math.min(startItem + pageSize, posts.size());
         posts = posts.subList(startItem, toIndex);
 
         return new PageImpl<>(posts, pageable, totalSize);
+    }
+
+    @Override
+    public Post getById(Long id) {
+        return new Post(1L, "test title", "test text", 10, Set.of("test1"), null,
+                Collections.singletonList(new Comment(1L, 1L, "test comment")));
+    }
+
+    @Override
+    public Post save(Post post) {
+        return null;
+    }
+
+    @Override
+    public void delete(Long id) {
+
     }
 }

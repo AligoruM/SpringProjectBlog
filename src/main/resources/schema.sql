@@ -1,23 +1,23 @@
 create table if not exists posts
 (
-    id bigserial primary key,
+    id identity primary key,
     title varchar(256) not null,
-    text varchar(4000) not null,
-    likes integer default 0,
-    created_when integer not null
+    text clob not null,
+    likes integer default 0
 );
 
 create table if not exists comments
 (
-    id bigserial primary key,
-    post_id bigserial not null,
+    id identity primary key,
+    post_id bigint not null,
     text varchar(4000),
     foreign key (post_id) references posts(id) on delete cascade
 );
 
 create table if not exists tags
 (
-    post_id bigserial primary key,
+    post_id int,
     tag varchar(256),
+    primary key (post_id, tag),
     foreign key (post_id) references posts(id) on delete cascade
 );

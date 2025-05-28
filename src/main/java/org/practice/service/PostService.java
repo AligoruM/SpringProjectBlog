@@ -6,4 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostService {
     Page<Post> findAll(Pageable pageable);
+    Post getById(Long id);
+    Post save(Post post);
+    void delete(Long id);
 }
