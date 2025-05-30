@@ -79,4 +79,13 @@ public class PostServiceImpl implements PostService {
         //delete image
         postRepository.delete(id);
     }
+
+    @Override
+    public void changeLikesCount(Long id, Boolean like) {
+        if (like) {
+            postRepository.increaseLikesCount(id);
+        } else {
+            postRepository.decreaseLikesCount(id);
+        }
+    }
 }

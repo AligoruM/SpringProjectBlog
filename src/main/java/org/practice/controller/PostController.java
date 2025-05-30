@@ -68,4 +68,10 @@ public class PostController {
         model.addAttribute("post", postService.getById(id));
         return "add-post";
     }
+
+    @PostMapping("/{id}/like")
+    public String likePost(@PathVariable("id") Long id, @RequestParam("like") Boolean like) {
+        postService.changeLikesCount(id, like);
+        return "redirect:/posts/" + id;
+    }
 }

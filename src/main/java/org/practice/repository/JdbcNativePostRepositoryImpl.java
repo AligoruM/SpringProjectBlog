@@ -75,6 +75,16 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
         jdbcTemplate.update("delete from posts where id = ?", id);
     }
 
+    @Override
+    public void increaseLikesCount(Long id) {
+        jdbcTemplate.update("update posts set likes = likes + 1 where id = ?", id);
+    }
+
+    @Override
+    public void decreaseLikesCount(Long id) {
+        jdbcTemplate.update("update posts set likes = likes - 1 where id = ?", id);
+    }
+
     private static class RsToPostMapper implements RowMapper<Post> {
         @Override
         public Post mapRow(ResultSet rs, int rowNum) throws SQLException {
