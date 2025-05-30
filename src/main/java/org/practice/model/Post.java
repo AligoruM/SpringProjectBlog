@@ -3,6 +3,7 @@ package org.practice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ public class Post {
     private Set<String> tags = new HashSet<>();
     private String rawTags;
     private List<Comment> comments = new ArrayList<>();
+    private MultipartFile image;
 
     public String getTextPreview() {
         if (text.length() > 200) {

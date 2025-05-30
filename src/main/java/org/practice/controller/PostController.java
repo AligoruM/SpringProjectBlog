@@ -1,8 +1,5 @@
 package org.practice.controller;
 
-import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.practice.model.Post;
 import org.practice.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,32 +22,31 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping({"/", ""})
+    @GetMapping
     public String posts(Model model,
                         @RequestParam("pageNumber") Optional<Integer> page,
                         @RequestParam("pageSize") Optional<Integer> size) {
         int currentPage = page.orElse(0);
         int pageSize = size.orElse(5);
-        PageRequest pageable = PageRequest.of(currentPage, pageSize);
 
-        Page<Post> posts = postService.findAll(pageable);
+        Page<Post> posts = postService.findPaged(PageRequest.of(currentPage, pageSize));
 
         model.addAttribute("posts", posts);
         return "posts";
     }
 
-    @PostMapping({"/", ""})
-    public String posts(@ModelAttribute Post post) {
-        postService.save(post);
-        return "posts";
-    }
-
-    @GetMapping("/add")
-    public String addPost() {
+    @GetMapping({"/add"})
+    public String addPostPage() {
         return "add-post";
     }
 
-    @GetMapping({"/{id}", "/{id}/"})
+    @PostMapping
+    public String createPost(@ModelAttribute Post post) {
+        postService.save(post);
+        return "redirect:/posts";
+    }
+
+    @GetMapping({"/{id}"})
     public String posts(@PathVariable("id") Long id, Model model) {
         model.addAttribute("post", postService.getById(id));
         return "post";

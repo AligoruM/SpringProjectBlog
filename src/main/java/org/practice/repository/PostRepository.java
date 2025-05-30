@@ -1,7 +1,12 @@
 package org.practice.repository;
 
-import org.springframework.stereotype.Repository;
+import org.practice.model.Post;
 
-@Repository
-public interface PostRepository /*extends JpaRepository<Post, Long>*/{
+import java.util.List;
+
+public interface PostRepository {
+    List<Post> getPagedPosts(int offset, int limit);
+    Post getById(Long id);
+    Post save(Post post);
+    void delete(Long id);
 }
