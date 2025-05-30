@@ -1,5 +1,6 @@
 package org.practice.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.practice.model.Post;
 import org.practice.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/posts")
@@ -25,12 +26,16 @@ public class PostController {
     @GetMapping
     public String posts(Model model,
                         @RequestParam("pageNumber") Optional<Integer> page,
-                        @RequestParam("pageSize") Optional<Integer> size) {
-        int currentPage = page.orElse(0);
-        int pageSize = size.orElse(5);
+                        @RequestParam("pageSize") Optional<Integer> size,
+                        @RequestParam("search") Optional<String> search) {
+        PageRequest pageable = PageRequest.of(page.orElse(0), size.orElse(5));
 
-        Page<Post> posts = postService.findPaged(PageRequest.of(currentPage, pageSize));
-
+        Page<Post> posts;
+        if (search.isPresent() && StringUtils.isNotBlank(search.get())) {
+            posts = postService.findPagedByTag(pageable, search.get());
+        } else {
+            posts = postService.findPaged(pageable);
+        }
         model.addAttribute("posts", posts);
         return "posts";
     }

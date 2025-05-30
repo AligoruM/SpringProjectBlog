@@ -4,13 +4,16 @@ import org.practice.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 @Transactional
@@ -18,14 +21,33 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Post> postRowMapper = new RsToPostMapper();
+
     @Autowired
     public JdbcNativePostRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public List<Post> getPagedPosts(int offset, int limit) {
-        return jdbcTemplate.query("select id, title, text, likes from posts", postRowMapper);
+    public Long count() {
+        return jdbcTemplate.queryForObject("select count(*) from posts", Long.class);
+    }
+
+    @Override
+    public List<Post> getPagedPosts(Long offset, int limit) {
+        return jdbcTemplate.query("select id, title, text, likes from posts offset ? fetch next ? rows only",
+                postRowMapper, offset, limit);
+    }
+
+    @Override
+    public List<Post> getPagedPostsByIds(List<Long> ids, Long offset, int limit) {
+        String sql = "select id, title, text, likes from posts where id in (select * from table(x bigint = ?)) offset ? fetch next ? rows only";
+        return jdbcTemplate.query(psc -> {
+            PreparedStatement ps = psc.prepareStatement(sql);
+            ps.setArray(1, psc.createArrayOf("bigint", ids.toArray()));
+            ps.setLong(2, offset);
+            ps.setInt(3, limit);
+            return ps;
+        }, postRowMapper);
     }
 
     @Override
@@ -35,7 +57,16 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
 
     @Override
     public Post save(Post post) {
-        jdbcTemplate.update("insert into posts(title, text) values (?,?)", post.getTitle(), post.getText());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(psc -> {
+            PreparedStatement ps = psc.prepareStatement("insert into posts(title, text) values (?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, post.getTitle());
+            ps.setString(2, post.getText());
+            return ps;
+        }, keyHolder);
+
+        post.setId(keyHolder.getKeyAs(Long.class));
         return post;
     }
 
@@ -52,7 +83,6 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
             post.setTitle(rs.getString("title"));
             post.setText(rs.getString("text"));
             post.setComments(List.of());
-            post.setTags(Set.of("test1"));
             post.setLikesCount(rs.getInt("likes"));
             return post;
         }
