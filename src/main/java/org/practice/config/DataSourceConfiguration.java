@@ -1,12 +1,14 @@
 package org.practice.config;
 
 import org.h2.Driver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -17,6 +19,13 @@ import javax.sql.DataSource;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class DataSourceConfiguration {
+
+    private final Environment env;
+
+    @Autowired
+    public DataSourceConfiguration(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     public DataSource dataSource(@Value("${spring.datasource.url}") String url,
@@ -42,6 +51,10 @@ public class DataSourceConfiguration {
 
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("schema.sql"));
+        Boolean prepopulationRequired = env.getProperty("testdata.prepopulation", Boolean.class, false);
+        if (prepopulationRequired) {
+            populator.addScript(new ClassPathResource("prepopulation.sql"));
+        }
         populator.execute(dataSource);
     }
 
