@@ -19,11 +19,13 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
+    private final StorageService storageService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, TagRepository tagRepository) {
+    public PostServiceImpl(PostRepository postRepository, TagRepository tagRepository, StorageService storageService) {
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
+        this.storageService = storageService;
     }
 
     @Override
@@ -67,16 +69,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post save(Post post) {
-        MultipartFile image = post.getImage();
-        //delegate save to storage service
         Post savedPost = postRepository.save(post);
-        tagRepository.saveTagsForPost(TagNormalizer.normalize(savedPost.getRawTags()), savedPost.getId());
+        Long id = savedPost.getId();
+        tagRepository.saveTagsForPost(TagNormalizer.normalize(savedPost.getRawTags()), id);
+        MultipartFile image = post.getImage();
+        storageService.store(image, id);
         return savedPost;
     }
 
     @Override
     public void delete(Long id) {
-        //delete image
+        storageService.delete(id.toString());
         postRepository.delete(id);
     }
 

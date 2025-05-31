@@ -48,7 +48,7 @@ public class PostController {
     @PostMapping
     public String createPost(@ModelAttribute Post post) {
         postService.save(post);
-        return "redirect:/posts";
+        return "redirect:/posts/" + post.getId();
     }
 
     @GetMapping({"/{id}"})
