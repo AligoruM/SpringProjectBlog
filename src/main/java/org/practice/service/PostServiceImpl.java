@@ -1,15 +1,15 @@
 package org.practice.service;
 
-import org.practice.model.Post;
+import org.practice.model.dto.PostDto;
 import org.practice.repository.PostRepository;
 import org.practice.repository.TagRepository;
+import org.practice.utils.PostMapper;
 import org.practice.utils.TagNormalizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,60 +20,76 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
     private final StorageService storageService;
+    private final CommentService commentService;
+    private final PostMapper postMapper;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, TagRepository tagRepository, StorageService storageService) {
+    public PostServiceImpl(PostRepository postRepository, TagRepository tagRepository,
+                           StorageService storageService, CommentService commentService,
+                           PostMapper postMapper) {
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
         this.storageService = storageService;
+        this.commentService = commentService;
+        this.postMapper = postMapper;
     }
 
     @Override
-    public Page<Post> findPaged(Pageable pageable) {
+    public Page<PostDto> findPaged(Pageable pageable) {
         Long totalSize = postRepository.count();
         if (totalSize == 0) {
             return new PageImpl<>(List.of(), pageable, totalSize);
         }
 
-        List<Post> pagedPosts = postRepository.getPagedPosts(pageable.getOffset(), pageable.getPageSize());
+        List<PostDto> pagedPosts = postMapper
+                .toPostDtoList(postRepository.getPagedPosts(pageable.getOffset(), pageable.getPageSize()));
         populateTags(pagedPosts);
+        populateCommentsCount(pagedPosts);
         return new PageImpl<>(pagedPosts, pageable, totalSize);
     }
 
     @Override
-    public Page<Post> findPagedByTag(Pageable pageable, String searchTag) {
+    public Page<PostDto> findPagedByTag(Pageable pageable, String searchTag) {
         List<Long> postIdsByTag = tagRepository.getPostIdsByTag(searchTag);
         if (postIdsByTag.isEmpty()) {
             return new PageImpl<>(List.of(), pageable, 0);
         }
 
-        List<Post> pagedPosts = postRepository.getPagedPostsByIds(postIdsByTag, pageable.getOffset(), pageable.getPageSize());
+        List<PostDto> pagedPosts = postMapper.toPostDtoList(postRepository
+                .getPagedPostsByIds(postIdsByTag, pageable.getOffset(), pageable.getPageSize()));
         populateTags(pagedPosts);
+        populateCommentsCount(pagedPosts);
         return new PageImpl<>(pagedPosts, pageable, postIdsByTag.size());
     }
 
-    private void populateTags(List<Post> posts) {
-        for (Post post : posts) {
+    private void populateTags(List<PostDto> posts) {
+        for (PostDto post : posts) {
             List<String> tagsByPostId = tagRepository.getTagsByPostId(post.getId());
             post.setTags(new HashSet<>(tagsByPostId));
         }
     }
 
+    private void populateCommentsCount(List<PostDto> posts) {
+        for (PostDto post : posts) {
+            post.setCommentsCount(commentService.count(post.getId()));
+        }
+    }
+
     @Override
-    public Post getById(Long id) {
-        Post post = postRepository.getById(id);
+    public PostDto getById(Long id) {
+        PostDto post = postMapper.toPostDto(postRepository.getById(id));
         List<String> tagsByPostId = tagRepository.getTagsByPostId(post.getId());
         post.setTags(new HashSet<>(tagsByPostId));
+        post.setComments(commentService.findByPostId(id));
         return post;
     }
 
     @Override
-    public Post save(Post post) {
-        Post savedPost = postRepository.save(post);
+    public PostDto save(PostDto post) {
+        PostDto savedPost = postMapper.toPostDto(postRepository.save(postMapper.toPostDao(post)));
         Long id = savedPost.getId();
         tagRepository.saveTagsForPost(TagNormalizer.normalize(savedPost.getRawTags()), id);
-        MultipartFile image = post.getImage();
-        storageService.store(image, id);
+        storageService.store(post.getImage(), id);
         return savedPost;
     }
 
@@ -84,8 +100,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void update(Post post) {
-        postRepository.update(post);
+    public void update(PostDto post) {
+        postRepository.update(postMapper.toPostDao(post));
         if (post.getImage() != null) {
             storageService.store(post.getImage(), post.getId());
         }

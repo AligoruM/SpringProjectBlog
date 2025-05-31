@@ -1,11 +1,10 @@
-package org.practice.model;
+package org.practice.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,16 +14,15 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class PostDto {
     private Long id;
-    @NotBlank
     private String title;
-    @NotBlank
     private String text;
     private int likesCount;
     private Set<String> tags = new HashSet<>();
     private String rawTags;
-    private List<Comment> comments = new ArrayList<>();
+    private List<CommentDto> comments = new ArrayList<>();
+    private int commentsCount;
     private MultipartFile image;
 
     public String getTextPreview() {

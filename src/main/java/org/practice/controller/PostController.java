@@ -1,7 +1,9 @@
 package org.practice.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.practice.model.Post;
+import org.practice.model.dto.CommentDto;
+import org.practice.model.dto.PostDto;
+import org.practice.service.CommentService;
 import org.practice.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,10 +19,12 @@ import java.util.Optional;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService, CommentService commentService) {
         this.postService = postService;
+        this.commentService = commentService;
     }
 
     @GetMapping
@@ -30,7 +34,7 @@ public class PostController {
                         @RequestParam("search") Optional<String> search) {
         PageRequest pageable = PageRequest.of(page.orElse(0), size.orElse(5));
 
-        Page<Post> posts;
+        Page<PostDto> posts;
         if (search.isPresent() && StringUtils.isNotBlank(search.get())) {
             posts = postService.findPagedByTag(pageable, search.get());
         } else {
@@ -46,13 +50,13 @@ public class PostController {
     }
 
     @PostMapping
-    public String createPost(@ModelAttribute Post post) {
-        postService.save(post);
-        return "redirect:/posts/" + post.getId();
+    public String createPost(@ModelAttribute PostDto post) {
+        PostDto savedPost = postService.save(post);
+        return "redirect:/posts/" + savedPost.getId();
     }
 
     @PostMapping("/{id}")
-    public String updatePost(@PathVariable("id") Long id, @ModelAttribute Post post) {
+    public String updatePost(@PathVariable("id") Long id, @ModelAttribute PostDto post) {
         postService.update(post);
         return "redirect:/posts/" + id;
     }
@@ -82,25 +86,25 @@ public class PostController {
         return "redirect:/posts/" + id;
     }
 
-    @PostMapping("/{id}/comments/{commentId}")
-    public String commentPost(@PathVariable("id") Long id,
+    @PostMapping("/{postId}/comments")
+    public String commentPost(@PathVariable("postId") Long postId,
+                              @RequestParam("text") String comment) {
+        commentService.save(new CommentDto(null, postId, comment));
+        return "redirect:/posts/" + postId;
+    }
+
+    @PostMapping("/{postId}/comments/{commentId}")
+    public String editComment(@PathVariable("postId") Long postId,
                               @PathVariable("commentId") Long commentId,
                               @RequestParam("text") String comment) {
-        //todo
-        return "redirect:/posts/" + id;
+        commentService.update(new CommentDto(commentId, postId, comment));
+        return "redirect:/posts/" + postId;
     }
 
-    @PostMapping("/{id}/comments")
-    public String editComment(@PathVariable("id") Long id,
-                              @RequestParam("text") String comment) {
-        //todo
-        return "redirect:/posts/" + id;
-    }
-
-    @PostMapping("/{id}/comments/{commentId}/delete")
-    public String deleteComment(@PathVariable("id") Long id,
+    @PostMapping("/{postId}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable("postId") Long postId,
                                 @PathVariable("commentId") Long commentId) {
-        //todo
-        return "redirect:/posts/" + id;
+        commentService.delete(commentId);
+        return "redirect:/posts/" + postId;
     }
 }

@@ -1,6 +1,6 @@
 package org.practice.repository;
 
-import org.practice.model.Post;
+import org.practice.model.PostDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,7 +20,7 @@ import java.util.List;
 public class JdbcNativePostRepositoryImpl implements PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Post> postRowMapper = new RsToPostMapper();
+    private final RowMapper<PostDao> postRowMapper = new RsToPostMapper();
 
     @Autowired
     public JdbcNativePostRepositoryImpl(JdbcTemplate jdbcTemplate) {
@@ -33,13 +33,13 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public List<Post> getPagedPosts(Long offset, int limit) {
+    public List<PostDao> getPagedPosts(Long offset, int limit) {
         return jdbcTemplate.query("select id, title, text, likes from posts offset ? fetch next ? rows only",
                 postRowMapper, offset, limit);
     }
 
     @Override
-    public List<Post> getPagedPostsByIds(List<Long> ids, Long offset, int limit) {
+    public List<PostDao> getPagedPostsByIds(List<Long> ids, Long offset, int limit) {
         String sql = "select id, title, text, likes from posts where id in (select * from table(x bigint = ?)) offset ? fetch next ? rows only";
         return jdbcTemplate.query(psc -> {
             PreparedStatement ps = psc.prepareStatement(sql);
@@ -51,12 +51,12 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Post getById(Long id) {
+    public PostDao getById(Long id) {
         return jdbcTemplate.queryForObject("select * from posts where id = ?", postRowMapper, id);
     }
 
     @Override
-    public Post save(Post post) {
+    public PostDao save(PostDao post) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(psc -> {
             PreparedStatement ps = psc.prepareStatement("insert into posts(title, text) values (?,?)",
@@ -76,7 +76,7 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void update(Post post) {
+    public void update(PostDao post) {
         jdbcTemplate.update("update posts set title = ?, text = ? where id = ?",
                 post.getTitle(), post.getText(), post.getId());
     }
@@ -91,14 +91,13 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
         jdbcTemplate.update("update posts set likes = likes - 1 where id = ?", id);
     }
 
-    private static class RsToPostMapper implements RowMapper<Post> {
+    private static class RsToPostMapper implements RowMapper<PostDao> {
         @Override
-        public Post mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Post post = new Post();
+        public PostDao mapRow(ResultSet rs, int rowNum) throws SQLException {
+            PostDao post = new PostDao();
             post.setId(rs.getLong("id"));
             post.setTitle(rs.getString("title"));
             post.setText(rs.getString("text"));
-            post.setComments(List.of());
             post.setLikesCount(rs.getInt("likes"));
             return post;
         }
