@@ -11,5 +11,6 @@ public interface PostService {
     Post save(Post post);
     void delete(Long id);
 
+    void update(Post post);
     void changeLikesCount(Long id, Boolean like);
 }

@@ -76,6 +76,12 @@ public class JdbcNativePostRepositoryImpl implements PostRepository {
     }
 
     @Override
+    public void update(Post post) {
+        jdbcTemplate.update("update posts set title = ?, text = ? where id = ?",
+                post.getTitle(), post.getText(), post.getId());
+    }
+
+    @Override
     public void increaseLikesCount(Long id) {
         jdbcTemplate.update("update posts set likes = likes + 1 where id = ?", id);
     }

@@ -51,6 +51,12 @@ public class PostController {
         return "redirect:/posts/" + post.getId();
     }
 
+    @PostMapping("/{id}")
+    public String updatePost(@PathVariable("id") Long id, @ModelAttribute Post post) {
+        postService.update(post);
+        return "redirect:/posts/" + id;
+    }
+
     @GetMapping({"/{id}"})
     public String posts(@PathVariable("id") Long id, Model model) {
         model.addAttribute("post", postService.getById(id));
@@ -70,8 +76,31 @@ public class PostController {
     }
 
     @PostMapping("/{id}/like")
-    public String likePost(@PathVariable("id") Long id, @RequestParam("like") Boolean like) {
+    public String likePost(@PathVariable("id") Long id,
+                           @RequestParam("like") Boolean like) {
         postService.changeLikesCount(id, like);
+        return "redirect:/posts/" + id;
+    }
+
+    @PostMapping("/{id}/comments/{commentId}")
+    public String commentPost(@PathVariable("id") Long id,
+                              @PathVariable("commentId") Long commentId,
+                              @RequestParam("text") String comment) {
+        //todo
+        return "redirect:/posts/" + id;
+    }
+
+    @PostMapping("/{id}/comments")
+    public String editComment(@PathVariable("id") Long id,
+                              @RequestParam("text") String comment) {
+        //todo
+        return "redirect:/posts/" + id;
+    }
+
+    @PostMapping("/{id}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable("id") Long id,
+                                @PathVariable("commentId") Long commentId) {
+        //todo
         return "redirect:/posts/" + id;
     }
 }

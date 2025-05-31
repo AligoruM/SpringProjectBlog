@@ -1,5 +1,6 @@
 package org.practice.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -11,12 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 @Service
 @PropertySource("classpath:application.properties")
+@Slf4j
 public class FileSystemStorageServiceImpl implements StorageService {
 
     private final Path rootLocation;
@@ -36,7 +36,7 @@ public class FileSystemStorageServiceImpl implements StorageService {
             File destFile = new File(rootLocation.toFile(), postId.toString());
 
             try (InputStream input = file.getInputStream()) {
-                Files.copy(input, destFile.toPath());
+                Files.copy(input, destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file.", e);
@@ -47,6 +47,8 @@ public class FileSystemStorageServiceImpl implements StorageService {
     public void delete(String filename) {
         try {
             Files.delete(rootLocation.resolve(filename));
+        } catch (NoSuchFileException e) {
+            log.warn("Could not delete file {} because no such file in: {}", filename, rootLocation.toAbsolutePath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,6 +58,8 @@ public class FileSystemStorageServiceImpl implements StorageService {
     public void init() {
         try {
             Files.createDirectory(rootLocation);
+        } catch (FileAlreadyExistsException e) {
+            log.warn("Could not create directory because directory already exists: {}", rootLocation.toAbsolutePath(), e);
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize storage", e);
         }

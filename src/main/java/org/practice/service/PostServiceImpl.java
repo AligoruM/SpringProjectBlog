@@ -84,6 +84,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public void update(Post post) {
+        postRepository.update(post);
+        if (post.getImage() != null) {
+            storageService.store(post.getImage(), post.getId());
+        }
+        tagRepository.updateTagsForPost(TagNormalizer.normalize(post.getRawTags()), post.getId());
+    }
+
+    @Override
     public void changeLikesCount(Long id, Boolean like) {
         if (like) {
             postRepository.increaseLikesCount(id);

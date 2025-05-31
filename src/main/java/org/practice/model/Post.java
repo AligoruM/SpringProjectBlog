@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +17,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Post {
     private Long id;
+    @NotBlank
     private String title;
+    @NotBlank
     private String text;
     private int likesCount;
     private Set<String> tags = new HashSet<>();
