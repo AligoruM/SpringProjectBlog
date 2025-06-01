@@ -7,7 +7,7 @@
 
 <body>
 <a href="/blog/posts" style="float:right;">
-    <b>НА ГЛАВНУЮ &cudarrr;</b>
+    <b>НА ГЛАВНУЮ</b>
 </a>
 <form method="POST" th:action="${post==null ? '/blog/posts' : '/blog/posts/'+post.getId()}"
       enctype="multipart/form-data">
@@ -21,7 +21,7 @@
         <tr>
             <td>
                 <h3>Изображение</h3>
-                <input type="file" name="image">
+                <input type="file" name="image"/>
             </td>
         </tr>
         <tr>
@@ -44,3 +44,4 @@
     </table>
 </form>
 </body>
+</html>

@@ -1,5 +1,6 @@
 package org.practice.service;
 
+import org.practice.model.PostDao;
 import org.practice.model.dto.PostDto;
 import org.practice.repository.PostRepository;
 import org.practice.repository.TagRepository;
@@ -86,11 +87,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto save(PostDto post) {
-        PostDto savedPost = postMapper.toPostDto(postRepository.save(postMapper.toPostDao(post)));
+        PostDao savedPost = postRepository.save(postMapper.toPostDao(post));
         Long id = savedPost.getId();
-        tagRepository.saveTagsForPost(TagNormalizer.normalize(savedPost.getRawTags()), id);
-        storageService.store(post.getImage(), id);
-        return savedPost;
+        tagRepository.saveTagsForPost(TagNormalizer.normalize(post.getRawTags()), id);
+        if (post.getImage() != null) {
+            storageService.store(post.getImage(), id);
+        }
+        post.setId(savedPost.getId());
+        return post;
     }
 
     @Override
