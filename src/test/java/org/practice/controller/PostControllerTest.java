@@ -19,7 +19,6 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringJUnitConfig(classes = {DataSourceConfiguration.class, WebConfiguration.class})
@@ -80,7 +79,6 @@ class PostControllerTest {
                 .andExpect(view().name("redirect:/posts/" + lastPost.getId()));
 
         mockMvc.perform(get("/posts/" + lastPost.getId()))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("post"))
                 .andExpect(model().attributeExists("post"))
