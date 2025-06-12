@@ -57,7 +57,7 @@ public class FileSystemStorageServiceImpl implements StorageService {
     @Override
     public void init() {
         try {
-            Files.createDirectory(rootLocation);
+            Files.createDirectories(rootLocation);
         } catch (FileAlreadyExistsException e) {
             log.warn("Could not create directory because directory already exists: {}", rootLocation.toAbsolutePath(), e);
         } catch (IOException e) {

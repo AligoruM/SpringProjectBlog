@@ -14,8 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"org.practice"})
-@PropertySource("classpath:application.properties")
 public class WebConfiguration implements WebMvcConfigurer {
 
     private Environment env;
@@ -23,11 +21,6 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Autowired
     public WebConfiguration(Environment env) {
         this.env = env;
-    }
-
-    @Bean
-    public MultipartResolver multipartResolver() {
-        return new StandardServletMultipartResolver();
     }
 
     @Override
