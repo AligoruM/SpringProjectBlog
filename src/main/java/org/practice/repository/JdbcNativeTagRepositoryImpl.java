@@ -1,6 +1,6 @@
 package org.practice.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,14 +12,10 @@ import java.util.List;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class JdbcNativeTagRepositoryImpl implements TagRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public JdbcNativeTagRepositoryImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Long countByTag(String tag) {

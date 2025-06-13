@@ -1,7 +1,7 @@
 package org.practice.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.practice.model.CommentDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -11,14 +11,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcNativeCommentRepositoryImpl implements CommentRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<CommentDao> commentRowMapper = new RsToCommentMapper();
-
-    @Autowired
-    public JdbcNativeCommentRepositoryImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Integer count(Long postId) {

@@ -1,23 +1,19 @@
 package org.practice.service;
 
+import lombok.RequiredArgsConstructor;
 import org.practice.dto.CommentDto;
-import org.practice.repository.CommentRepository;
 import org.practice.mapper.CommentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.practice.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
+
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
-
-    @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, CommentMapper commentMapper) {
-        this.commentRepository = commentRepository;
-        this.commentMapper = commentMapper;
-    }
 
     @Override
     public int count(Long postId) {

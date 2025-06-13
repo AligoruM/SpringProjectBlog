@@ -1,12 +1,12 @@
 package org.practice.service;
 
-import org.practice.model.PostDao;
+import lombok.RequiredArgsConstructor;
 import org.practice.dto.PostDto;
+import org.practice.mapper.PostMapper;
+import org.practice.model.PostDao;
 import org.practice.repository.PostRepository;
 import org.practice.repository.TagRepository;
-import org.practice.mapper.PostMapper;
 import org.practice.utils.TagNormalizer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
@@ -23,17 +24,6 @@ public class PostServiceImpl implements PostService {
     private final StorageService storageService;
     private final CommentService commentService;
     private final PostMapper postMapper;
-
-    @Autowired
-    public PostServiceImpl(PostRepository postRepository, TagRepository tagRepository,
-                           StorageService storageService, CommentService commentService,
-                           PostMapper postMapper) {
-        this.postRepository = postRepository;
-        this.tagRepository = tagRepository;
-        this.storageService = storageService;
-        this.commentService = commentService;
-        this.postMapper = postMapper;
-    }
 
     @Override
     public Page<PostDto> findPaged(Pageable pageable) {
@@ -64,6 +54,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private void populateTags(List<PostDto> posts) {
+        //I don't like it, here should be method that will fetch tags in batch
         for (PostDto post : posts) {
             List<String> tagsByPostId = tagRepository.getTagsByPostId(post.getId());
             post.setTags(new HashSet<>(tagsByPostId));
@@ -71,6 +62,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private void populateCommentsCount(List<PostDto> posts) {
+        //same as for tags
         for (PostDto post : posts) {
             post.setCommentsCount(commentService.count(post.getId()));
         }
@@ -112,6 +104,9 @@ public class PostServiceImpl implements PostService {
         tagRepository.updateTagsForPost(TagNormalizer.normalize(post.getRawTags()), post.getId());
     }
 
+    /*I suppose it's should be better to load post, update likes and save itю
+      In this implementation some business logic is in DAO lvl, that is not good,
+      but I just left it as is, don't want to change.*/
     @Override
     public void changeLikesCount(Long id, Boolean like) {
         if (like) {

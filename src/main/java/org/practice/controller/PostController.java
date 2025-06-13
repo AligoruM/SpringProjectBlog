@@ -1,11 +1,11 @@
 package org.practice.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.practice.dto.CommentDto;
 import org.practice.dto.PostDto;
 import org.practice.service.CommentService;
 import org.practice.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -16,16 +16,11 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/posts")
+@RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
     private final CommentService commentService;
-
-    @Autowired
-    public PostController(PostService postService, CommentService commentService) {
-        this.postService = postService;
-        this.commentService = commentService;
-    }
 
     @GetMapping
     public String posts(Model model,

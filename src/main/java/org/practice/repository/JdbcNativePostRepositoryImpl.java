@@ -1,7 +1,7 @@
 package org.practice.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.practice.model.PostDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,15 +17,11 @@ import java.util.List;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class JdbcNativePostRepositoryImpl implements PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<PostDao> postRowMapper = new RsToPostMapper();
-
-    @Autowired
-    public JdbcNativePostRepositoryImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Long count() {
