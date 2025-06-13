@@ -1,10 +1,10 @@
 package org.practice.service;
 
 import org.practice.model.PostDao;
-import org.practice.model.dto.PostDto;
+import org.practice.dto.PostDto;
 import org.practice.repository.PostRepository;
 import org.practice.repository.TagRepository;
-import org.practice.utils.PostMapper;
+import org.practice.mapper.PostMapper;
 import org.practice.utils.TagNormalizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

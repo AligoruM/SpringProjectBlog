@@ -1,4 +1,4 @@
-package org.practice.model.dto;
+package org.practice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

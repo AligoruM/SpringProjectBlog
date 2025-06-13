@@ -1,8 +1,8 @@
 package org.practice.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.practice.model.dto.CommentDto;
-import org.practice.model.dto.PostDto;
+import org.practice.dto.CommentDto;
+import org.practice.dto.PostDto;
 import org.practice.service.CommentService;
 import org.practice.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;

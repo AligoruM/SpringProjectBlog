@@ -1,6 +1,6 @@
 package org.practice.service;
 
-import org.practice.model.dto.PostDto;
+import org.practice.dto.PostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

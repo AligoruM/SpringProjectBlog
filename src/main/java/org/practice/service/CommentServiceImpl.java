@@ -1,8 +1,8 @@
 package org.practice.service;
 
-import org.practice.model.dto.CommentDto;
+import org.practice.dto.CommentDto;
 import org.practice.repository.CommentRepository;
-import org.practice.utils.CommentMapper;
+import org.practice.mapper.CommentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

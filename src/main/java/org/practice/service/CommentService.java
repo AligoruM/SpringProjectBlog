@@ -1,7 +1,7 @@
 package org.practice.service;
 
 
-import org.practice.model.dto.CommentDto;
+import org.practice.dto.CommentDto;
 
 import java.util.List;
 

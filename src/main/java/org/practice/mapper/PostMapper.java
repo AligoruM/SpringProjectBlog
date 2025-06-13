@@ -1,8 +1,8 @@
-package org.practice.utils;
+package org.practice.mapper;
 
 import org.mapstruct.Mapper;
 import org.practice.model.PostDao;
-import org.practice.model.dto.PostDto;
+import org.practice.dto.PostDto;
 
 import java.util.List;
 

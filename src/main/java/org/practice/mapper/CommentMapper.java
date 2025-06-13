@@ -1,8 +1,8 @@
-package org.practice.utils;
+package org.practice.mapper;
 
 import org.mapstruct.Mapper;
 import org.practice.model.CommentDao;
-import org.practice.model.dto.CommentDto;
+import org.practice.dto.CommentDto;
 
 import java.util.List;
 
