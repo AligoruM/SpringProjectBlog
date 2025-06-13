@@ -14,6 +14,7 @@ public class TagNormalizer {
                 .map(String::trim)
                 .map(s -> StringUtils.stripStart(s, "#"))
                 .map(StringUtils::uncapitalize)
+                .distinct()
                 .toList();
     }
 }
