@@ -1,5 +1,7 @@
 # Simple Blog application on Spring
 
+## WIP moving to gradle and spring boot
+
 This is simple blog application I created for spring framework practice.
 Nothing special, just practice. You can add/delete/edit posts, add comments, like or dislike it.
 
