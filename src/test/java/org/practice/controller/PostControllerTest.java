@@ -7,7 +7,11 @@ import org.practice.config.WebConfiguration;
 import org.practice.model.PostDao;
 import org.practice.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,23 +25,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringJUnitConfig(classes = {DataSourceConfiguration.class, WebConfiguration.class})
-@WebAppConfiguration
+@SpringBootTest
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
 class PostControllerTest {
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private MockMvc mockMvc;
     @Autowired
     private PostRepository jdbcPostRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private MockMvc mockMvc;
-
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-
         jdbcTemplate.update("delete from posts");
         jdbcTemplate.update("insert into posts (title, text, likes) values ('Prepopulated post 1', 'Prepopulated text 1', 1);");
         jdbcTemplate.update("insert into posts (title, text, likes) values ('Prepopulated post 2', 'Prepopulated text 2', 2);");
