@@ -14,7 +14,7 @@ class TagNormalizerTest {
     public void testTagNormalizer_validTag_shouldReturnSameString() {
         String input = "tag1";
         List<String> normalized = TagNormalizer.normalize(input);
-        assertThat(normalized.getFirst()).isEqualTo("tag1");
+        assertThat(normalized).containsOnly("tag1");
     }
 
     @Test
@@ -28,7 +28,6 @@ class TagNormalizerTest {
     public void testTagNormalizer_2tags_shouldReturn2tags() {
         String input = "tag1 tag2";
         List<String> normalized = TagNormalizer.normalize(input);
-        assertThat(normalized).hasSize(2);
         assertThat(normalized).containsOnly("tag1", "tag2");
     }
 
@@ -37,7 +36,7 @@ class TagNormalizerTest {
         String input = "Tag1";
         List<String> normalized = TagNormalizer.normalize(input);
         assertThat(normalized).hasSize(1);
-        assertThat(normalized.getFirst()).isEqualTo("tag1");
+        assertThat(normalized).containsOnly("tag1");
     }
 
     @Test
@@ -49,9 +48,10 @@ class TagNormalizerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {" ", "\t", "\n"})
-    public void testTagNormalizer_spaceSymbolsStringTag_shouldReturnEmptyCollection(String input) {
+    @ValueSource(strings = {"tag1 tag2", "tag1\ttag2", "tag1\ntag2"})
+    public void testTagNormalizer_spaceSymbolsString2Tags_shouldReturn2Tags(String input) {
         List<String> normalized = TagNormalizer.normalize(input);
-        assertThat(normalized).hasSize(0);
+        assertThat(normalized).hasSize(2);
+        assertThat(normalized).containsOnly("tag1", "tag2");
     }
 }
